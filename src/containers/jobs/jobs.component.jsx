@@ -12,18 +12,26 @@ const JobsPage = () => {
   const [state, setState] = useState({
     jobs: [],
     query: "",
+    submittedQuery: "",
     currentPage: 1,
     totalPages: 0,
     isLoading: false
   });
 
-  const { query, currentPage, totalPages, jobs, isLoading } = state;
+  const {
+    query,
+    currentPage,
+    totalPages,
+    jobs,
+    isLoading,
+    submittedQuery
+  } = state;
   useEffect(() => {
     setState(state => ({ ...state, isLoading: true }));
     const getJobs = async () => {
       try {
-        let url = query
-          ? `https://api.joblocal.de/v4/jobs?filter.domain=45&fields.job=${query}&page.number	
+        let url = submittedQuery
+          ? `https://api.joblocal.de/v4/jobs?filter.domain=45&fields.job=${submittedQuery}&page.number	
   =${currentPage}`
           : `https://api.joblocal.de/v4/jobs?filter.domain=45&page.number=${currentPage}`;
         let { data } = await Axios.get(url);
@@ -35,7 +43,7 @@ const JobsPage = () => {
       }
     };
     getJobs();
-  }, [query, currentPage]);
+  }, [submittedQuery, currentPage]);
 
   const onPageChange = e => {
     setState({ ...state, currentPage: e.selected + 1 });
@@ -43,6 +51,8 @@ const JobsPage = () => {
 
   const SubmitHandler = e => {
     e.preventDefault();
+    const query = state.query;
+    setState({ ...state, submittedQuery: query });
   };
 
   const queryChangeHandler = e => {
